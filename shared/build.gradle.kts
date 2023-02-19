@@ -1,5 +1,3 @@
-import com.zero.maven.publish.gradle.MavenPublishExtension
-
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -74,17 +72,16 @@ android {
 apply {
     plugin("io.github.weijunfeng.maven.publish.kmm")
 }
-extensions.configure<MavenPublishExtension>("mavenPublish") {
+extensions.configure<com.zero.maven.publish.gradle.MavenPublishExtension>("mavenPublish") {
     mavenUsername = ""
 
     mavenPassword = ""
 
-    mavenSnapshotUrl = "2"
+    mavenSnapshotUrl = "https://github.com"
 
-    mavenReleaseUrl = "2"
+    mavenReleaseUrl = "https://github.com"
 
+    publishGroupId = "com.weijunfeng.maven.plugin"
 
-    publishGroupId = ""
-
-    publishVersionPrefix = ""
+    publishVersionPrefix = "1.01.1"
 }

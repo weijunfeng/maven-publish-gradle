@@ -72,7 +72,7 @@ android {
 
 // 需要放到最后apply进来
 apply {
-    plugin("com.zero.maven.publish.kmm")
+    plugin("io.github.weijunfeng.maven.publish.kmm")
 }
 extensions.configure<MavenPublishExtension>("mavenPublish") {
     mavenUsername = ""

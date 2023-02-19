@@ -39,12 +39,12 @@ val sourcesJar by tasks.registering(Jar::class) {
 gradlePlugin {
     plugins {
         create("kmmMavenPublish") {
-            id = "io.github.weijunfeng"
+            id = "io.github.weijunfeng.maven.publish.kmm"//必须为Sonatype注册id开头
             displayName = "KmmMavenPublishPlugin"
             implementationClass = "com.zero.maven.publish.gradle.kmm.KmmMavenPublishPlugin"
         }
         create("androidMavenPublish") {
-            id = "io.github.weijunfeng"
+            id = "io.github.weijunfeng.maven.publish.android"
             displayName = "AndroidMavenPublishPlugin"
             implementationClass = "com.zero.maven.publish.gradle.android.AndroidMavenPublishPlugin"
         }

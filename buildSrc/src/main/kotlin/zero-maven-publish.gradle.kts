@@ -32,56 +32,59 @@ val emptyJavadocJar by tasks.registering(Jar::class) {
 }
 
 fun getExtraString(name: String) = ext[name]?.toString()
-publishing {
-    repositories {
-        maven {
-            name = "release"
-            setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = getExtraString("ossrhUsername")
-                password = getExtraString("ossrhPassword")
-            }
-        }
-        maven {
-            name = "snapshot"
-            setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-            credentials {
-                username = getExtraString("ossrhUsername")
-                password = getExtraString("ossrhPassword")
-            }
-        }
-    }
-
-    publications.withType<MavenPublication> {
-        artifact(emptyJavadocJar.get())
-
-        pom {
-            //组件的基本信息
-            name.set("maven-publish-gradle")
-            description.set("maven-publish-gradle")
-            url.set("https://github.com/weijunfeng/maven-publish-gradle")
-            //licenses文件
-            licenses {
-                license {
-                    name.set("MIT")
-                    url.set("https://opensource.org/licenses/MIT")
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                name = "release"
+                setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                credentials {
+                    username = getExtraString("ossrhUsername")
+                    password = getExtraString("ossrhPassword")
                 }
             }
-            //开发者信息
-            developers {
-                developer {
-//                    id.set("weijunfeng")
-                    name.set("weijunfeng")
-                    email.set("891130789@qq.com")
+            maven {
+                name = "snapshot"
+                setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                credentials {
+                    username = getExtraString("ossrhUsername")
+                    password = getExtraString("ossrhPassword")
                 }
             }
-            //版本控制仓库地址
-            scm {
+        }
+
+        publications.withType<MavenPublication> {
+            artifact(emptyJavadocJar.get())
+
+            pom {
+                //组件的基本信息
+                name.set("maven-publish-gradle")
+                description.set("maven-publish-gradle")
                 url.set("https://github.com/weijunfeng/maven-publish-gradle")
+                //licenses文件
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                //开发者信息
+                developers {
+                    developer {
+                        id.set("weijunfeng")
+                        name.set("weijunfeng")
+                        email.set("891130789@qq.com")
+                    }
+                }
+                //版本控制仓库地址
+                scm {
+                    url.set("https://github.com/weijunfeng/maven-publish-gradle")
+                }
             }
         }
     }
 }
+
 
 getExtraString("signing.keyId")?.let { keyId ->
     signing {

@@ -1,8 +1,10 @@
+import com.zero.maven.publish.gradle.MavenPublishExtension
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
-    id("com.zero.maven.publish.kmm").version("1.0.2-SNAPSHOT")
+//    id("com.zero.maven.publish.kmm").version("1.0.2-SNAPSHOT")
 }
 
 kotlin {
@@ -68,25 +70,21 @@ android {
     }
 }
 
-mavenPublish {
-    publishVersion.set("1.01")
-    publishGroupId.set("com.shared")
-    mavenLocalUrl.set("./build/repo")
-    mavenUserName.set("")
-    mavenPassword.set("")
-    groupDefaultLocal.set(true)
-    createPublication("release") {
-        url = ""
-    }
+// 需要放到最后apply进来
+apply {
+    plugin("com.zero.maven.publish.kmm")
 }
+extensions.configure<MavenPublishExtension>("mavenPublish") {
+    mavenUsername = ""
 
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>("testPublish") {
-                val softwareComponent = components.findByName("debug")
-                from(softwareComponent)
-            }
-        }
-    }
+    mavenPassword = ""
+
+    mavenSnapshotUrl = "2"
+
+    mavenReleaseUrl = "2"
+
+
+    publishGroupId = ""
+
+    publishVersionPrefix = ""
 }

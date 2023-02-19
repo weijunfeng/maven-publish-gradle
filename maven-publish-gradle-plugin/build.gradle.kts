@@ -2,6 +2,7 @@ plugins {
     `java-gradle-plugin`
     id("org.jetbrains.kotlin.jvm")
     `maven-publish`
+    `zero-maven-publish`
     `kotlin-dsl`
 }
 
@@ -38,12 +39,12 @@ val sourcesJar by tasks.registering(Jar::class) {
 gradlePlugin {
     plugins {
         create("kmmMavenPublish") {
-            id = "com.zero.maven.publish.kmm"
+            id = "io.github.weijunfeng"
             displayName = "KmmMavenPublishPlugin"
             implementationClass = "com.zero.maven.publish.gradle.kmm.KmmMavenPublishPlugin"
         }
         create("androidMavenPublish") {
-            id = "com.zero.maven.publish.android"
+            id = "io.github.weijunfeng"
             displayName = "AndroidMavenPublishPlugin"
             implementationClass = "com.zero.maven.publish.gradle.android.AndroidMavenPublishPlugin"
         }
@@ -55,33 +56,31 @@ enum class PublicationType {
     RELEASE;
 }
 
-val publicationVersion = "1.0.2-${PublicationType.SNAPSHOT}"
-val mavenUserName = project.property("mavenUserName") as String
-val mavenPassword = project.property("mavenPwd") as String
-val mavenUrl = project.property("mavenSnapshot") as String
+val publicationVersion = "1.0.1"
 
 publishing {
     repositories {
-        // 发布到远程仓库，不指定url，后面根据具体的发布动态设置远程url
-        maven {
-            credentials {
-                // 远程认证信息
-                username = mavenUserName
-                password = mavenPassword
-            }
-            // 允许使用http链接发布
-            isAllowInsecureProtocol = true
-            url = uri(mavenUrl)
-        }
+//        // 发布到远程仓库，不指定url，后面根据具体的发布动态设置远程url
+//        maven {
+//            credentials {
+//                // 远程认证信息
+//                username = mavenUserName
+//                password = mavenPassword
+//            }
+//            // 允许使用http链接发布
+//            isAllowInsecureProtocol = true
+//            url = uri(mavenUrl)
+//        }
         // 发布到本地
         mavenLocal {
+            name = "local"
             url = uri("${project.buildDir}/repo")
         }
     }
     publications.withType<MavenPublication> {
         artifact(sourcesJar)
         version = publicationVersion
-        groupId = "com.zero.maven.publish"
+        groupId = "io.github.weijunfeng" // 必须为Sonatype注册id
         artifactId = "mavenPublish-gradle-plugin"
     }
 }

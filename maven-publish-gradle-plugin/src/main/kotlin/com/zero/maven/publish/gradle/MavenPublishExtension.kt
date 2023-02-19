@@ -1,50 +1,46 @@
 package com.zero.maven.publish.gradle
 
-import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 
 interface MavenPublishExtension {
-    /**
-     * 设置发布的版本
-     */
-    val publishVersion: Property<String>
 
     /**
-     * 设置发布的 groupId
+     * 认证名
      */
-    val publishGroupId: Property<String>
+    var mavenUsername: String
 
     /**
-     * 添加一个在本地 Maven url地址
+     * 认证密码
      */
-    val mavenLocalUrl: Property<String>
+    var mavenPassword: String
 
     /**
-     * 设置对存储库进行身份验证时要使用的用户名。
+     * Snapshot版本地址
      */
-    val mavenUserName: Property<String>
+    var mavenSnapshotUrl: String
 
     /**
-     * 设置对存储库进行身份验证时使用的密码。
+     * Release版地址
      */
-    val mavenPassword: Property<String>
+    var mavenReleaseUrl: String
+
+    /**
+     * 测试版地址
+     */
+    var mavenBateUrl: String
+
+    /**
+     * 发布的 groupId
+     */
+    var publishGroupId: String
+
+    /**
+     * 发布版本前缀
+     */
+    var publishVersionPrefix: String
 
     /**
      * 任务分组
      */
     val taskGroup: Property<String>
-
-    val groupDefaultLocal: Property<Boolean>
-
-    /**
-     * 发布类型
-     */
-    val publications: MapProperty<String, PublicationType>
-
-    fun createPublication(name: String, action: PublicationType.() -> Unit) {
-        publications.put(name, PublicationType(name).apply(action))
-    }
 }
-
-val MavenPublishExtension.publicationTypes
-    get() = publications.get().values

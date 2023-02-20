@@ -43,14 +43,14 @@ afterEvaluate {
                     password = getExtraString("ossrhPassword")
                 }
             }
-            maven {
-                name = "snapshot"
-                setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                credentials {
-                    username = getExtraString("ossrhUsername")
-                    password = getExtraString("ossrhPassword")
-                }
-            }
+//            maven {
+//                name = "snapshot"
+//                setUrl("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+//                credentials {
+//                    username = getExtraString("ossrhUsername")
+//                    password = getExtraString("ossrhPassword")
+//                }
+//            }
         }
 
         publications.withType<MavenPublication> {
@@ -58,8 +58,8 @@ afterEvaluate {
 
             pom {
                 //组件的基本信息
-                name.set("maven-publish-gradle")
-                description.set("maven-publish-gradle")
+                name.set("mavenPublish-gradle-plugin")
+                description.set("mavenPublish-gradle-plugin")
                 url.set("https://github.com/weijunfeng/maven-publish-gradle")
                 //licenses文件
                 licenses {

@@ -27,7 +27,7 @@ sourceSets {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
     implementation("com.android.tools.build:gradle:7.0.4")
 }
 
@@ -36,17 +36,14 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
 }
 
+val sonatypeGroupId = "io.github.weijunfeng"
+
 gradlePlugin {
     plugins {
-        create("kmmMavenPublish") {
-            id = "io.github.weijunfeng.maven.publish.kmm"//必须为Sonatype注册id开头
-            displayName = "KmmMavenPublishPlugin"
-            implementationClass = "com.zero.maven.publish.gradle.kmm.KmmMavenPublishPlugin"
-        }
-        create("androidMavenPublish") {
-            id = "io.github.weijunfeng.maven.publish.android"
-            displayName = "AndroidMavenPublishPlugin"
-            implementationClass = "com.zero.maven.publish.gradle.android.AndroidMavenPublishPlugin"
+        create("mavenPublishPlugin") {
+            id = "${sonatypeGroupId}.maven.publish"//必须为Sonatype注册id开头
+            displayName = "MavenPublishPlugin"
+            implementationClass = "com.zero.maven.publish.gradle.MavenPublishPlugin"
         }
     }
 }
@@ -56,7 +53,7 @@ enum class PublicationType {
     RELEASE;
 }
 
-val publicationVersion = "1.0.1"
+val publicationVersion = "1.0.2"
 
 publishing {
     repositories {
@@ -80,7 +77,7 @@ publishing {
     publications.withType<MavenPublication> {
         artifact(sourcesJar)
         version = publicationVersion
-        groupId = "io.github.weijunfeng" // 必须为Sonatype注册id
+        groupId = sonatypeGroupId // 必须为Sonatype注册id
         artifactId = "mavenPublish-gradle-plugin"
     }
 }

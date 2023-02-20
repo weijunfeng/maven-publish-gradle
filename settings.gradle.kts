@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
-//        maven {
-//            setUrl("./maven-publish-gradle-plugin/build/repo/")
-//        }
+        maven {
+            setUrl("./maven-publish-gradle-plugin/build/repo/")
+        }
         google()
         gradlePluginPortal()
         mavenCentral()
@@ -11,9 +11,9 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
-//        maven {
-//            setUrl("./maven-publish-gradle-plugin/build/repo/")
-//        }
+        maven {
+            setUrl("./maven-publish-gradle-plugin/build/repo/")
+        }
         google()
         mavenCentral()
     }

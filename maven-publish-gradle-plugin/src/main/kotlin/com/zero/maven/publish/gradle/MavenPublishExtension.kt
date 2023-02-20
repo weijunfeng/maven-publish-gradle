@@ -5,14 +5,14 @@ import org.gradle.api.provider.Property
 interface MavenPublishExtension {
 
     /**
-     * 认证名
+     * 认证名, 当配置[mavenReleaseUrl]或[mavenSnapshotUrl]或[mavenBateUrl]时必须配置该值
      */
-    var mavenUsername: String
+    val mavenUsername: Property<String>
 
     /**
-     * 认证密码
+     * 认证密码, 当配置[mavenReleaseUrl]或[mavenSnapshotUrl]或[mavenBateUrl]时必须配置该值
      */
-    var mavenPassword: String
+    val mavenPassword: Property<String>
 
     /**
      * Snapshot版本地址
@@ -32,12 +32,12 @@ interface MavenPublishExtension {
     /**
      * 发布的 groupId
      */
-    var publishGroupId: String
+    val publishGroupId: Property<String>
 
     /**
      * 发布版本前缀
      */
-    var publishVersionPrefix: String
+    val publishVersionPrefix: Property<String>
 
     /**
      * 任务分组

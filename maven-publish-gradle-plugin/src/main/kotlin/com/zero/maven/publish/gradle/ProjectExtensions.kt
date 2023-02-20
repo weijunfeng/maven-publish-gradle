@@ -5,19 +5,18 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.withType
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 internal inline val Project.gradlePublishing: PublishingExtension
     get() = extensions.getByType(PublishingExtension::class.java)
-
-internal inline val Project.mavenPublishExtension: MavenPublishExtension
-    get() = extensions.getByType(MavenPublishExtension::class.java)
 
 internal fun Project.gradlePublishing(action: Action<PublishingExtension>) {
     gradlePublishing.apply {
@@ -64,17 +63,16 @@ fun Project.doLastPrintUrl() {
     }
 }
 
-fun RepositoryHandler.remoteMaven(project: Project, remoteName: String, remoteUrl: String?) {
+fun RepositoryHandler.remoteMaven(project: Project, remoteName: String, mavenPublishExtension: MavenPublishExtension, remoteUrl: String?) {
     if (remoteUrl.isNullOrEmpty()) {
         return
     }
-    val mavenPublishExtension = project.mavenPublishExtension
     maven {
         name = remoteName
         credentials {
             // 远程认证信息
-            username = mavenPublishExtension.mavenUsername
-            password = mavenPublishExtension.mavenPassword
+            username = mavenPublishExtension.mavenUsername.get()
+            password = mavenPublishExtension.mavenPassword.get()
         }
         // 允许使用http链接发布
         isAllowInsecureProtocol = true
@@ -82,13 +80,12 @@ fun RepositoryHandler.remoteMaven(project: Project, remoteName: String, remoteUr
     }
 }
 
-fun Project.setRepositories() {
-    val mavenPublishExtension = project.mavenPublishExtension
+fun Project.setRepositories(mavenPublishExtension: MavenPublishExtension) {
     gradlePublishing {
         repositories {
-            remoteMaven(this@setRepositories, "snapshot", mavenPublishExtension.mavenSnapshotUrl)
-            remoteMaven(this@setRepositories, "release", mavenPublishExtension.mavenReleaseUrl)
-            remoteMaven(this@setRepositories, "bate", mavenPublishExtension.mavenBateUrl)
+            remoteMaven(this@setRepositories, "snapshot", mavenPublishExtension, mavenPublishExtension.mavenSnapshotUrl)
+            remoteMaven(this@setRepositories, "release", mavenPublishExtension, mavenPublishExtension.mavenReleaseUrl)
+            remoteMaven(this@setRepositories, "bate", mavenPublishExtension, mavenPublishExtension.mavenBateUrl)
             // 发布到本地
             maven {
                 name = "local"
@@ -98,7 +95,7 @@ fun Project.setRepositories() {
     }
 }
 
-fun Project.setGroupId() {
+fun Project.setGroupId(mavenPublishExtension: MavenPublishExtension) {
     val startParameterTaskNames = gradle.startParameter.taskNames
     val startParameterTaskName = if (startParameterTaskNames.size != 1) {
         ""
@@ -112,15 +109,65 @@ fun Project.setGroupId() {
     } else if (startParameterTask is CombinedPublishToMavenTask) {
         repository = startParameterTask.repository
     }
-    val mavenPublishExtension = project.mavenPublishExtension
     gradlePublishing.publications.withType<MavenPublication> {
-        groupId = mavenPublishExtension.publishGroupId
-        version = "${mavenPublishExtension.publishVersionPrefix}${
+        groupId = mavenPublishExtension.publishGroupId.get()
+        version = "${mavenPublishExtension.publishVersionPrefix.get()}${
             if (repository != null) {
                 "-${repository.name.toUpperCase()}"
             } else {
                 ""
             }
         }"
+    }
+}
+
+internal fun <T> Project.whenEvaluated(fn: Project.() -> T) {
+    if (state.executed) {
+        fn()
+        return
+    }
+
+    /** If there's already an Android plugin applied, just dispatch the action to `afterEvaluate`, it gets executed after AGP's actions */
+    if (androidPluginIds.any { pluginManager.hasPlugin(it) }) {
+        afterEvaluate { fn() }
+        return
+    }
+
+    val isDispatchedAfterAndroid = AtomicBoolean(false)
+
+    /**
+     * This queue holds all actions submitted to `whenEvaluated` in this project, waiting for one of the Android plugins to be applied.
+     * After (and if) an Android plugin gets applied, we dispatch all the actions in the queue to `afterEvaluate`, so that they are
+     * executed after what AGP scheduled to `afterEvaluate`. There are different Android plugins, so actions in the queue also need to check
+     * if it's the first Android plugin, using `isDispatched` (each has its own instance).
+     */
+    val afterAndroidDispatchQueue = project.extensions.extraProperties.getOrPut("org.jetbrains.kotlin.whenEvaluated") {
+        val queue = mutableListOf<() -> Unit>()
+        // Trigger the actions on any plugin applied; the actions themselves ensure that they only dispatch the fn once.
+        androidPluginIds.forEach { id ->
+            pluginManager.withPlugin(id) { queue.forEach { it() } }
+        }
+        queue
+    }
+    afterAndroidDispatchQueue.add {
+        if (!isDispatchedAfterAndroid.getAndSet(true)) {
+            afterEvaluate { fn() }
+        }
+    }
+
+    afterEvaluate {
+        /** If no Android plugin was loaded, then the action was not dispatched, and we can freely execute it now */
+        if (!isDispatchedAfterAndroid.getAndSet(true)) {
+            fn()
+        }
+    }
+}
+
+internal inline fun <reified T : Any> ExtraPropertiesExtension.getOrPut(key: String, provideValue: () -> T): T {
+    return synchronized(this) {
+        if (!has(key)) {
+            set(key, provideValue())
+        }
+        get(key) as T
     }
 }

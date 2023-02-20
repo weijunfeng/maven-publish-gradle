@@ -13,13 +13,13 @@ import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
-class AndroidMavenPublishPlugin : BaseMavenPublishPlugin {
-    override fun afterEvaluate(project: Project, mavenPublishExtension: MavenPublishExtension) {
+class AndroidMavenPublish {
+    fun afterEvaluate(project: Project, mavenPublishExtension: MavenPublishExtension) {
         createSourceJarTask(project)
         project.setPublications()
-        project.setRepositories()
-        project.setGroupId()
-        project.groupTask()
+        project.setRepositories(mavenPublishExtension)
+        project.setGroupId(mavenPublishExtension)
+        project.groupTask(mavenPublishExtension)
         project.doLastPrintUrl()
     }
 
@@ -48,7 +48,7 @@ class AndroidMavenPublishPlugin : BaseMavenPublishPlugin {
         }
     }
 
-    private fun Project.groupTask() {
+    private fun Project.groupTask(mavenPublishExtension: MavenPublishExtension) {
         tasks.withType<AbstractPublishToMaven>().forEach {
             if (it !is PublishToMavenRepository) {
                 return@forEach

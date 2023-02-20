@@ -12,12 +12,12 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 
-class KmmMavenPublishPlugin : BaseMavenPublishPlugin {
-    override fun afterEvaluate(project: Project, mavenPublishExtension: MavenPublishExtension) {
-        project.setRepositories()
-        project.setGroupId()
+class KmmMavenPublish {
+    fun afterEvaluate(project: Project, mavenPublishExtension: MavenPublishExtension) {
+        project.setRepositories(mavenPublishExtension)
+        project.setGroupId(mavenPublishExtension)
         project.createCombinedPublishTask()
-        project.groupTask()
+        project.groupTask(mavenPublishExtension)
         project.doLastPrintUrl()
     }
 
@@ -65,7 +65,7 @@ class KmmMavenPublishPlugin : BaseMavenPublishPlugin {
         }
     }
 
-    private fun Project.groupTask() {
+    private fun Project.groupTask(mavenPublishExtension: MavenPublishExtension) {
         tasks.withType<AbstractPublishToMaven>().forEach {
             if (it !is PublishToMavenRepository) {
                 return@forEach

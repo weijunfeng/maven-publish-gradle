@@ -1,6 +1,9 @@
 # maven-publish-gradle
 ## **一个对maven-publish的快速配置扩展工具**
 
+## 版本
+最新版 1.0.2
+
 ## **特性**
 
 1. 支持快速配置`maven` 发布配置信息

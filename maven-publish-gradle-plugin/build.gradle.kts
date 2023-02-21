@@ -36,7 +36,7 @@ val sourcesJar by tasks.registering(Jar::class) {
     from(sourceSets.main.get().allSource)
 }
 
-val sonatypeGroupId = "io.github.weijunfeng"
+val sonatypeGroupId = "io.github.wjf510"
 
 gradlePlugin {
     plugins {

@@ -16,7 +16,7 @@
 
 ```jsx
 plugins {
-    id("io.github.weijunfeng.maven.publish").version("1.0.2")
+    id("io.github.wjf510.maven.publish").version("1.0.2")
 }
 mavenPublish {
     mavenUsername.set("")

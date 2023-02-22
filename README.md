@@ -2,7 +2,7 @@
 ## **一个对maven-publish的快速配置扩展工具**
 
 ## 版本
-最新版 1.0.2
+最新版 1.0.3
 
 ## **特性**
 
@@ -16,7 +16,7 @@
 
 ```jsx
 plugins {
-    id("io.github.wjf510.maven.publish").version("1.0.2")
+    id("io.github.wjf510.maven.publish").version("xxx")
 }
 mavenPublish {
     mavenUsername.set("")

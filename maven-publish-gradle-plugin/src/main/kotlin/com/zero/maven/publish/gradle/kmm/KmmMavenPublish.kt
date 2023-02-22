@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
+import java.util.*
 
 /*
  * Copyright (c) 2021 wjf510.
@@ -36,21 +37,19 @@ class KmmMavenPublish {
 
 
     private fun publishAllIosToSingleRepoTaskName(repository: MavenArtifactRepository): String {
-        return "publishAllIosPublicationsTo" + repository.name.capitalize() + "Repository"
+        return "publishAllIosPublicationsTo" + repository.name.capitalize(Locale.ROOT) + "Repository"
     }
 
     private fun publishAllMobileToSingleRepoTaskName(repository: MavenArtifactRepository): String {
-        return "publishAllMobilePublicationsTo" + repository.name.capitalize() + "Repository"
+        return "publishAllMobilePublicationsTo" + repository.name.capitalize(Locale.ROOT) + "Repository"
     }
 
     private fun DefaultMavenPublication.kotlinTarget(project: Project): KotlinTarget? {
-        if (this.component == null) {
-            return null
-        }
+        val component = this.component ?: return null
         val kotlin = project.extensions.getByType<KotlinMultiplatformExtension>()
         kotlin.targets
             .forEach {
-                if (it.components.contains(this.component)) {
+                if (it.components.contains(component)) {
                     return it
                 }
             }

@@ -43,11 +43,15 @@ class AndroidMavenPublish {
                 || project.plugins.hasPlugin("com.android.application")
                 || project.plugins.hasPlugin("android-library")
             ) {
-                val srcDirs = project.extensions.getByType<com.android.build.gradle.LibraryExtension>()
+                val androidSourceSet = project.extensions.getByType<com.android.build.gradle.LibraryExtension>()
                     .sourceSets
                     .getByName("main")
+                val kotlinSrcDirs = androidSourceSet
                     .kotlin as com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
-                from(*(srcDirs.srcDirs.toTypedArray()))
+                val javaSrcDirs = androidSourceSet
+                    .java as com.android.build.gradle.internal.api.DefaultAndroidSourceDirectorySet
+                val srcDirs = kotlinSrcDirs.srcDirs + javaSrcDirs.srcDirs
+                from(*(srcDirs.toTypedArray()))
             } else if (project.plugins.hasPlugin("java")
                 || project.plugins.hasPlugin("java-library")
             ) {

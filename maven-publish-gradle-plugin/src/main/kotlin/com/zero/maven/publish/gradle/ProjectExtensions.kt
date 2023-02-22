@@ -12,6 +12,7 @@ import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.withType
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -63,7 +64,12 @@ fun Project.doLastPrintUrl() {
     }
 }
 
-fun RepositoryHandler.remoteMaven(project: Project, remoteName: String, mavenPublishExtension: MavenPublishExtension, remoteUrl: String?) {
+fun RepositoryHandler.configRemoteMaven(
+    project: Project,
+    remoteName: String,
+    mavenPublishExtension: MavenPublishExtension,
+    remoteUrl: String?
+) {
     if (remoteUrl.isNullOrEmpty()) {
         return
     }
@@ -83,9 +89,18 @@ fun RepositoryHandler.remoteMaven(project: Project, remoteName: String, mavenPub
 fun Project.setRepositories(mavenPublishExtension: MavenPublishExtension) {
     gradlePublishing {
         repositories {
-            remoteMaven(this@setRepositories, "snapshot", mavenPublishExtension, mavenPublishExtension.mavenSnapshotUrl)
-            remoteMaven(this@setRepositories, "release", mavenPublishExtension, mavenPublishExtension.mavenReleaseUrl)
-            remoteMaven(this@setRepositories, "bate", mavenPublishExtension, mavenPublishExtension.mavenBateUrl)
+            configRemoteMaven(
+                this@setRepositories,
+                "snapshot", mavenPublishExtension, mavenPublishExtension.mavenSnapshotUrl
+            )
+            configRemoteMaven(
+                this@setRepositories,
+                "release", mavenPublishExtension, mavenPublishExtension.mavenReleaseUrl
+            )
+            configRemoteMaven(
+                this@setRepositories,
+                "bate", mavenPublishExtension, mavenPublishExtension.mavenBateUrl
+            )
             // 发布到本地
             maven {
                 name = "local"
@@ -113,7 +128,7 @@ fun Project.setGroupId(mavenPublishExtension: MavenPublishExtension) {
         groupId = mavenPublishExtension.publishGroupId.get()
         version = "${mavenPublishExtension.publishVersionPrefix.get()}${
             if (repository != null) {
-                "-${repository.name.toUpperCase()}"
+                "-${repository.name.toUpperCase(Locale.ROOT)}"
             } else {
                 ""
             }
@@ -121,7 +136,10 @@ fun Project.setGroupId(mavenPublishExtension: MavenPublishExtension) {
     }
 }
 
-internal fun <T> Project.whenEvaluated(fn: Project.() -> T) {
+/**
+ * 在android插件执行后执行[fn]
+ */
+internal fun <T> Project.afterAndroidPluginEvaluated(fn: Project.() -> T) {
     if (state.executed) {
         fn()
         return

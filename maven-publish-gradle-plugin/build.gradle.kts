@@ -27,7 +27,7 @@ sourceSets {
 dependencies {
     implementation(gradleApi())
     implementation(localGroovy())
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
     implementation("com.android.tools.build:gradle:7.0.4")
 }
 
@@ -53,7 +53,7 @@ enum class PublicationType {
     RELEASE;
 }
 
-val publicationVersion = "1.0.3"
+val publicationVersion = "1.0.3-1.8.10"
 
 publishing {
     repositories {

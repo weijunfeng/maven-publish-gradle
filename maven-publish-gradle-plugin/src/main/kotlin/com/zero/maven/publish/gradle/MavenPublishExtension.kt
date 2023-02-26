@@ -1,6 +1,8 @@
 package com.zero.maven.publish.gradle
 
+import org.gradle.api.Action
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.maven.MavenPom
 
 interface MavenPublishExtension {
 
@@ -43,4 +45,9 @@ interface MavenPublishExtension {
      * 任务分组
      */
     val taskGroup: Property<String>
+
+    /**
+     * 配置将要发布的 POM
+     */
+    val pom: Property<Action<MavenPom>>
 }

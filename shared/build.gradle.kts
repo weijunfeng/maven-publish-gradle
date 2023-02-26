@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
-    id("io.github.wjf510.maven.publish").version("1.0.4")
+    id("io.github.wjf510.maven.publish").version("1.0.5")
 }
 
 kotlin {

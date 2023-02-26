@@ -12,6 +12,7 @@ import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.SigningExtension
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,6 +22,15 @@ internal inline val Project.gradlePublishing: PublishingExtension
 
 internal fun Project.gradlePublishing(action: Action<PublishingExtension>) {
     gradlePublishing.apply {
+        action.execute(this)
+    }
+}
+
+internal inline val Project.gradleSigning: SigningExtension
+    get() = extensions.getByType(SigningExtension::class.java)
+
+internal fun Project.gradleSigning(action: Action<SigningExtension>) {
+    gradleSigning.apply {
         action.execute(this)
     }
 }
@@ -102,7 +112,7 @@ fun Project.setRepositories(mavenPublishExtension: MavenPublishExtension) {
                 "bate", mavenPublishExtension, mavenPublishExtension.mavenBateUrl
             )
             // 发布到本地
-            maven {
+            mavenLocal {
                 name = "local"
                 url = project.uri("./build/repo/")
             }

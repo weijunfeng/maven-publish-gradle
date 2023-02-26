@@ -126,13 +126,14 @@ fun Project.setGroupId(mavenPublishExtension: MavenPublishExtension) {
     }
     gradlePublishing.publications.withType<MavenPublication> {
         groupId = mavenPublishExtension.publishGroupId.get()
-        version = "${mavenPublishExtension.publishVersionPrefix.get()}${
-            if (repository != null) {
-                "-${repository.name.toUpperCase(Locale.ROOT)}"
-            } else {
-                ""
+        var publishVersion = mavenPublishExtension.publishVersion.get()
+        if (repository != null) {
+            val upperCaseRepositoryName = repository.name.toUpperCase(Locale.ROOT)
+            if (!publishVersion.endsWith(upperCaseRepositoryName)) {
+                publishVersion += "-${upperCaseRepositoryName}"
             }
-        }"
+        }
+        version = publishVersion
     }
 }
 
@@ -141,7 +142,9 @@ fun Project.setGroupId(mavenPublishExtension: MavenPublishExtension) {
  */
 internal fun <T> Project.afterAndroidPluginEvaluated(fn: Project.() -> T) {
     if (state.executed) {
-        fn()
+        afterEvaluate {
+            fn()
+        }
         return
     }
 

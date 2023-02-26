@@ -35,9 +35,9 @@ interface MavenPublishExtension {
     val publishGroupId: Property<String>
 
     /**
-     * 发布版本前缀
+     * 发布版本号,如果不以LOCAL或SNAPSHOT或RELEASE结尾 则自动追加其
      */
-    val publishVersionPrefix: Property<String>
+    val publishVersion: Property<String>
 
     /**
      * 任务分组

@@ -53,7 +53,7 @@ enum class PublicationType {
     RELEASE;
 }
 
-val publicationVersion = "1.0.3"
+val publicationVersion = "1.0.4"
 
 publishing {
     repositories {

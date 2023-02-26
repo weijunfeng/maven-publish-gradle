@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
-    id("io.github.weijunfeng.maven.publish").version("1.0.2")
+    id("io.github.wjf510.maven.publish").version("1.0.4")
 }
 
 kotlin {
@@ -37,7 +37,7 @@ kotlin {
             }
         }
         val androidMain by getting
-        val androidUnitTest by getting
+        val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
@@ -78,5 +78,5 @@ mavenPublish {
 
     publishGroupId.set("com.weijunfeng.maven.plugin")
 
-    publishVersionPrefix.set("1.01.1")
+    publishVersion.set("1.01.1")
 }

@@ -75,10 +75,12 @@ publishing {
         }
     }
     publications.withType<MavenPublication> {
-        artifact(sourcesJar)
-        version = publicationVersion
-        groupId = sonatypeGroupId // 必须为Sonatype注册id
-        artifactId = "mavenPublish-gradle-plugin"
+        if (this.name == "pluginMaven") {
+            artifact(sourcesJar)
+            version = publicationVersion
+            groupId = sonatypeGroupId // 必须为Sonatype注册id
+            artifactId = "mavenPublish-gradle-plugin"
+        }
     }
 }
 
